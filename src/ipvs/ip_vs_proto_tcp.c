@@ -20,6 +20,7 @@
 #include "common.h"
 #include "dpdk.h"
 #include "ipv4.h"
+#include "neigh.h"
 #include "ipvs/ipvs.h"
 #include "ipvs/proto.h"
 #include "ipvs/proto_tcp.h"
@@ -451,6 +452,7 @@ static int tcp_conn_sched(struct dp_vs_proto *proto,
 
     /* only TCP-SYN without other flag can be scheduled */
     if (!th->syn || th->ack || th->fin || th->rst) {
+#ifdef CONFIG_DPVS_IPVS_DEBUG
         char dbuf[64], sbuf[64];
         const char *daddr, *saddr;
 
@@ -462,6 +464,7 @@ static int tcp_conn_sched(struct dp_vs_proto *proto,
                 th->syn ? 'S' : '.', th->fin ? 'F' : '.',
                 th->ack ? 'A' : '.', th->rst ? 'R' : '.',
                 saddr, ntohs(th->source), daddr, ntohs(th->dest));
+#endif
 
         /* Drop tcp packet which is send to vip and !vport */
         if (g_defence_tcp_drop &&
@@ -506,6 +509,7 @@ tcp_conn_lookup(struct dp_vs_proto *proto, const struct dp_vs_iphdr *iph,
                 struct rte_mbuf *mbuf, int *direct, bool reverse, bool *drop)
 {
     struct tcphdr *th, _tcph;
+    struct dp_vs_conn *conn;
     assert(proto && iph && mbuf);
 
     th = mbuf_header_pointer(mbuf, iph->len, sizeof(_tcph), &_tcph);
@@ -517,8 +521,27 @@ tcp_conn_lookup(struct dp_vs_proto *proto, const struct dp_vs_iphdr *iph,
         return NULL;
     }
 
-    return dp_vs_conn_get(iph->af, iph->proto, 
+    conn = dp_vs_conn_get(iph->af, iph->proto, 
             &iph->saddr, &iph->daddr, th->source, th->dest, direct, reverse);
+
+    /*
+     * L2 confirm neighbour
+     * pkt in from client confirm neighbour to client 
+     * pkt out from rs confirm neighbour to rs 
+     */
+    if (conn != NULL) {
+        if (th->ack) {
+            if ((*direct == DPVS_CONN_DIR_INBOUND) && conn->out_dev 
+                 && (conn->out_nexthop.in.s_addr != htonl(INADDR_ANY))) {
+                neigh_confirm(conn->out_nexthop.in, conn->out_dev);
+            } else if ((*direct == DPVS_CONN_DIR_OUTBOUND) && conn->in_dev 
+                        && (conn->in_nexthop.in.s_addr != htonl(INADDR_ANY))) {
+                neigh_confirm(conn->in_nexthop.in, conn->in_dev);
+            }
+        }
+    }
+
+    return conn;
 }
 
 static int tcp_fnat_in_handler(struct dp_vs_proto *proto,

@@ -18,7 +18,7 @@ global_defs {
 
 ! netif config
 netif_defs {
-    <init> pktpool_size     524287  <65535, 1023-134217728>
+    <init> pktpool_size     2097151 <65535, 1023-134217728>
     <init> pktpool_cache    256     <256, 32-8192>
 
     <init> device dpdk0 {
@@ -171,6 +171,8 @@ ipvs_defs {
 
     udp {
         defence_udp_drop        <enable>
+        uoa_mode                opp   <opp for private protocol by default, or ipo for IP-option mode>
+        uoa_max_trail           3     <max trails for send UOA for a connection>
         timeout {               <1-31535999>
             normal      300     <300>
             last        3       <3>

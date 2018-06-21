@@ -12,13 +12,13 @@
 
 ! global config
 global_defs {
-    log_level   WARNING
+    log_level    WARNING
 !    log_file    /var/log/dpvs.log
 }
 
 ! netif config
 netif_defs {
-    <init> pktpool_size     2097151
+    <init> pktpool_size     524287
     <init> pktpool_cache    256
 
     <init> device dpdk0 {
@@ -35,21 +35,6 @@ netif_defs {
     !    kni_name                dpdk0.kni
     }
 
-    <init> device dpdk1 {
-        rx {
-            queue_number        8
-            descriptor_number   1024
-            rss                 tcp
-        }
-        tx {
-            queue_number        8
-            descriptor_number   1024
-        }
-    !    promisc_mode
-    !    kni_name                dpdk1.kni
-    }
-
-
     <init> device dpdk2 {
         rx {
             queue_number        8
@@ -64,34 +49,12 @@ netif_defs {
     !    kni_name                dpdk2.kni
     }
 
-    <init> device dpdk3 {
-        rx {
-            queue_number        8
-            descriptor_number   1024
-            rss                 tcp
-        }
-        tx {
-            queue_number        8
-            descriptor_number   1024
-        }
-    !    promisc_mode
-    !    kni_name                dpdk3.kni
-    } 
-
     <init> bonding bond0 {
         mode                    0
         slave                   dpdk0
-        slave                   dpdk1
+        slave                   dpdk2
         primary                 dpdk0
         kni_name                bond0.kni
-    }
-
-    <init> bonding bond1 {
-        mode                    0
-        slave                   dpdk2
-        slave                   dpdk3
-        primary                 dpdk2
-        kni_name                bond1.kni
     }
 }
 
@@ -111,24 +74,12 @@ worker_defs {
             isol_rx_cpu_ids  9
             isol_rxq_ring_sz 1048576
         }
-        port    bond1 {
-            rx_queue_ids     0
-            tx_queue_ids     0
-            isol_rx_cpu_ids  9
-            isol_rxq_ring_sz 1048576
-        }
     }
 
     <init> worker cpu2 {
         type    slave
         cpu_id  2
         port    bond0 {
-            rx_queue_ids     1
-            tx_queue_ids     1
-            isol_rx_cpu_ids  10
-            isol_rxq_ring_sz 1048576
-        }
-        port    bond1 {
             rx_queue_ids     1
             tx_queue_ids     1
             isol_rx_cpu_ids  10
@@ -145,24 +96,12 @@ worker_defs {
             isol_rx_cpu_ids  11
             isol_rxq_ring_sz 1048576
         }
-        port    bond1 {
-            rx_queue_ids     2
-            tx_queue_ids     2
-            isol_rx_cpu_ids  11
-            isol_rxq_ring_sz 1048576
-        }
     }
 
     <init> worker cpu4 {
         type    slave
         cpu_id  4
         port    bond0 {
-            rx_queue_ids     3
-            tx_queue_ids     3
-            isol_rx_cpu_ids  12
-            isol_rxq_ring_sz 1048576
-        }
-        port    bond1 {
             rx_queue_ids     3
             tx_queue_ids     3
             isol_rx_cpu_ids  12
@@ -179,24 +118,12 @@ worker_defs {
             isol_rx_cpu_ids  13
             isol_rxq_ring_sz 1048576
         }
-        port    bond1 {
-            rx_queue_ids     4
-            tx_queue_ids     4
-            isol_rx_cpu_ids  13
-            isol_rxq_ring_sz 1048576
-        }
     }
 
     <init> worker cpu6 {
         type    slave
         cpu_id  6
         port    bond0 {
-            rx_queue_ids     5
-            tx_queue_ids     5
-            isol_rx_cpu_ids  14
-            isol_rxq_ring_sz 1048576
-        }
-        port    bond1 {
             rx_queue_ids     5
             tx_queue_ids     5
             isol_rx_cpu_ids  14
@@ -213,24 +140,12 @@ worker_defs {
             isol_rx_cpu_ids  15
             isol_rxq_ring_sz 1048576
         }
-        port    bond1 {
-            rx_queue_ids     6
-            tx_queue_ids     6
-            isol_rx_cpu_ids  15
-            isol_rxq_ring_sz 1048576
-        }
     }
 
     <init> worker cpu8 {
         type    slave
         cpu_id  8
         port    bond0 {
-            rx_queue_ids     7
-            tx_queue_ids     7
-            isol_rx_cpu_ids  16
-            isol_rxq_ring_sz 1048576
-        }
-        port    bond1 {
             rx_queue_ids     7
             tx_queue_ids     7
             isol_rx_cpu_ids  16

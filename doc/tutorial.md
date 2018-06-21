@@ -19,6 +19,7 @@ DPVS Tutorial
   - [Tunnel Device](#vdev-tun)
   - [KNI for virtual device](#vdev-kni)
 * [UDP Option of Address (UOA)](#uoa)
+* [Launch DPVS in Virtual Machine (Ubuntu)](#Ubuntu16.04)
 
 > To compile and launch DPVS, pls check *README.md* for this project.
 
@@ -166,7 +167,14 @@ Pls use `ipvsadm --add-laddr` to set `LIP` instead of `dpip addr add ...`. Becau
 
 Another tip is you can use `dpip addr add 10.0.0.100/16 dev dpdk1` to set VIP and WAN route simultaneously. But let's use two commands to make it clear.
 
-Optionally, if `RS` need to obtain client's real *IP:port* by socket API, e.g., `getpeername` or `accept`, instead of some application manner. `TOA` kernel module should be installed on `RS`. `TOA` is developped for some version of Linux kernel, and porting may needed for other versions or other OS Kernel like *BSD* or *mTCP*. Pls refer this [doc](https://github.com/alibaba/LVS/blob/master/docs/LVS_user_manual.pdf) to get `TOA` source code and porting to your `RS` if needed.
+Optionally, if `RS` need to obtain client's real *IP:port* by socket API, e.g., `getpeername` or `accept`, instead of some application manner. `TOA` kernel module should be installed on `RS`. `TOA` is developped for some version of Linux kernel, and porting may needed for other versions or other OS Kernel like *BSD* or *mTCP*.
+
+You could refer to following links to get `TOA` source code and porting to your `RS` if needed.
+
+* [Alibaba LVS](https://github.com/alibaba/LVS/blob/master/docs/LVS_user_manual.pdf)
+* [UCloud TOA](https://docs.ucloud.cn/security/uads/faq/game)
+* [Huawai TOA](https://github.com/Huawei/TCP_option_address)
+* [IPVS CA](https://github.com/yubo/ip_vs_ca)
 
 <a id='fnat-ospf'/>
 
@@ -507,7 +515,7 @@ Your ip:port : 192.168.100.46:13862
 
 > DR mode for two-arm is similar with [two-arm FNAT](#simple-fnat), pls change the forwarding mode by `ipvsadm -g`, and you need NOT config `LIP`. Configuration of `RS`es are the same with one-arm.
 
-<a id=`tunnel`/>
+<a id='tunnel'/>
 
 # Tunnel Mode (one-arm)
 
@@ -659,7 +667,7 @@ virtual_server match SNAT1 {
 
     real_server 123.1.2.1  0 {
         weight 4
-    }   
+    }
 }
 
 virtual_server match SNAT2 {
@@ -671,9 +679,9 @@ virtual_server match SNAT2 {
     oif dpdk1
     iif dpdk0
 
-    real_server 123.1.2.1  0 {  
+    real_server 123.1.2.1  0 {
         weight 4
-    }   
+    }
 }
 ```
 
@@ -696,10 +704,10 @@ virtual_server match SNAT {
     real_server 123.1.2.2 0 {
         weight 4
         MISC_CHECK {
-           misc_path 'exit'##Just make a healthy check which will always judge real_server healthy
+           misc_path "exit 0"##Just make a healthy check which will always judge real_server healthy
            misc_timeout 10
-        }   
-    }   
+        }
+    }
 }
 ```
 
@@ -799,3 +807,59 @@ Statistics are supported for debug purpose. Note `recvfrom(2)` is kept untouched
 It's useful to send the data back by socket. Pls note UDP socket is connect-less, one `socket-fd` can be used to communicate with different peers.
 
 Actually, we use private IP option to implement `UOA`, pls check the details in [uoa.md](../uoa/uoa.md).
+
+<a id='Ubuntu16.04'/>
+
+# Launch DPVS in Virtual Machine (Ubuntu)
+
+### DPDK build and install
+
+Before DPDK build and install ,fix code for ubuntu in vm
+
+```
+$ cd dpdk-stable-17.05.2/
+$ sed -i "s/pci_intx_mask_supported(dev)/pci_intx_mask_supported(dev)||true/g" lib/librte_eal/linuxapp/igb_uio/igb_uio.c
+```
+
+Now to set up DPDK hugepage,for more messages ( single-node system) pls refer the [link](http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html).
+
+```bash
+$ # for single node machine
+$ echo 1024 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+```
+
+## Build DPVS on Ubuntu
+
+> may need install dependencies, like `openssl`, `popt` and `numactl`, e.g., ` apt-get install libpopt-dev libssl-dev libnuma-dev` (Ubuntu).
+
+## Launch DPVS on Ubuntu
+
+Now, `dpvs.conf` must be put at `/etc/dpvs.conf`, just copy it from `conf/dpvs.conf.single-nic.sample`.
+
+```bash
+$ cp conf/dpvs.conf.single-nic.sample /etc/dpvs.conf
+```
+
+The NIC for Ubuntu may not support flow-director(fdir),for that case ,pls use 'single worker',may decrease conn_pool_size .
+
+```bash
+queue_number        1
+! worker config (lcores)
+worker_defs {
+    <init> worker cpu0 {
+        type    master
+        cpu_id  0
+    }
+
+    <init> worker cpu1 {
+        type    slave
+        cpu_id  1
+        port    dpdk0 {
+            rx_queue_ids     0
+            tx_queue_ids     0
+            ! isol_rx_cpu_ids  9
+            ! isol_rxq_ring_sz 1048576
+        }
+    }
+
+```
