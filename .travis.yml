@@ -18,6 +18,7 @@ jobs:
   include:
   - stage: build
     script:
+    - echo "Hello world!"
     - scripts/travis-ci.sh build
   - stage: deploy
     script:
