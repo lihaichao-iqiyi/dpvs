@@ -8,9 +8,9 @@ apt addons: true
 cache components: true
 compiler: gcc
 before_install:
-- openssl aes-256-cbc -K $encrypted_2359da2d74c7_key -iv $encrypted_2359da2d74c7_iv
-  -in id_rsa.enc -out ~/.ssh/id_rsa -d
-- chmod 600 ~/.ssh/id_rsa
+- openssl aes-256-cbc -K $encrypted_c6d82b5acd7b_key -iv $encrypted_c6d82b5acd7b_iv
+  -in id_rsa.enc -out ~/id_rsa -d
+- chmod 600 ~/.ssh/id_r:sa
 - echo -e "Host 115.182.224.11\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 install: true
 before_script: true
