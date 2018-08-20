@@ -60,6 +60,7 @@ def test(s):
     run_commond(s, input_command)
 
 if __name__=="__main__":
+    print 'start'
     s = socket_build()
     if sys.argv[1] == "send":
         send(s)
