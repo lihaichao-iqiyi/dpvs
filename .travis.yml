@@ -14,7 +14,6 @@ jobs:
   - stage: build
     script:
     - echo "Hello world!"
-    - python scripts/test.py send
     - python scripts/test.py build
   - stage: deploy
     script:
