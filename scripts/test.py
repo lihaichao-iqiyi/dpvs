@@ -46,7 +46,14 @@ def run_commond(s,input_command):
         if not len(buff):
             break
         sys.stdout.write(buff)
+    flag = s.recv()
     s.close()
+    if flag == '0':
+        sys.exit(0)
+    else:
+        sys.exit(1)
+
+
 
 def build(s):
     input_command = './travis-ci.sh build'
