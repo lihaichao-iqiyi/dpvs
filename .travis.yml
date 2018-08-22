@@ -8,14 +8,13 @@ cache components: true
 compiler: gcc
 before_install: true
 install: true 
-before_script: 
-    - echo "Hello send!"
-    - python scripts/test.py send
+before_script: true 
 jobs:
   include:
   - stage: build
     script:
     - echo "Hello world!"
+    - python scripts/test.py send
     - python scripts/test.py build
   - stage: deploy
     script:
