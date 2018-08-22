@@ -13,7 +13,7 @@ def socket_build():
    # print s.recv(1024)
     return s
 def send(s):
-    os.system("tar -jcf dpvs-ci.tar.bz2  ../../dpvs")
+    os.system("tar -jcf dpvs-ci.tar.bz2 ../dpvs")
     while 1:
         filepath = 'dpvs-ci.tar.bz2'
         if os.path.isfile(filepath):
