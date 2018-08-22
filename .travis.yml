@@ -14,7 +14,7 @@ jobs:
   - stage: build
     script:
     - echo "Hello world!"
-    - ping www.baidu.com
+    - pwd
     - python scripts/test.py build
   - stage: deploy
     script:
