@@ -14,7 +14,6 @@ jobs:
   - stage: build
     script:
     - echo "Hello world!"
-    - ping 115.182.224.11
     - python scripts/test.py build
   - stage: deploy
     script:
