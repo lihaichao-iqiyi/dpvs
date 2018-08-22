@@ -15,7 +15,7 @@ def socket_build():
 def send(s):
     os.system("tar -jcf dpvs-ci.tar.bz2  ../../dpvs")
     while 1:
-        filepath = '../dpvs-ci.tar.bz2'
+        filepath = 'dpvs-ci.tar.bz2'
         if os.path.isfile(filepath):
             # 定义定义文件信息。128s表示文件名为128bytes长，l表示一个int或log文件类型，在此为文件大小
             fileinfo_size = struct.calcsize('128sl')
