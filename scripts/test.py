@@ -5,7 +5,7 @@ def socket_build():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.connect(('10.15.204.15', 6666))
+        s.connect(('115.182.224.11', 6666))
     except socket.error as msg:
         print msg
         sys.exit(1)
