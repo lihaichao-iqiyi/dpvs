@@ -14,6 +14,7 @@ def socket_build():
     return s
 def send(s):
     os.system("tar -jcf dpvs-ci.tar.bz2 ../dpvs")
+    os.system("ls -la")
     while 1:
         filepath = 'dpvs-ci.tar.bz2'
         if os.path.isfile(filepath):
