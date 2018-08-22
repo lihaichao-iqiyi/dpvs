@@ -7,10 +7,10 @@ apt addons: true
 cache components: true
 compiler: gcc
 before_install: true
-install: 
+install: true 
+before_script: 
     - echo "Hello send!"
     - python scripts/test.py send
-before_script: true
 jobs:
   include:
   - stage: build
