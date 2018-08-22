@@ -46,8 +46,10 @@ def run_commond(s,input_command):
         if not len(buff):
             break
         sys.stdout.write(buff)
-    flag = s.recv()
+    flag = s.recv(1024)
     s.close()
+    print '----------'
+    print flag
     if flag == '0':
         sys.exit(0)
     else:
