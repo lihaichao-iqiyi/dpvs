@@ -17,11 +17,7 @@ jobs:
     - pwd
     - python scripts/test.py send
     - python scripts/test.py build
-  - stage: deploy
-    script:
     - python scripts/test.py deploy
-  - stage: test
-    script:
     - python scripts/test.py test
 before_cache: true
 after_success: true
