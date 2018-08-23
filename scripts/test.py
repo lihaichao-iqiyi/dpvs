@@ -49,10 +49,7 @@ def run_commond(s,input_command):
     flag = s.recv(1024)
     s.close()
     print("flag:%s"%flag)
-    if flag == '0':
-        sys.exit(0)
-    else:
-        sys.exit(1)
+    sys.exit(int(flag))
 
 
 
