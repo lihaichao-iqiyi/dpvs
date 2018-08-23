@@ -67,7 +67,6 @@ def test(s):
 
 if __name__=="__main__":
     s = socket_build()
-    build(s)
     if sys.argv[1] == "send":
         send(s)
     elif sys.argv[1] == "build":
