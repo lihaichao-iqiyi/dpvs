@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding=utf-8 -*-
-import sys,os,socket,struct
+import sys,os,socket,struct,traceback
 def socket_build():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -9,11 +9,10 @@ def socket_build():
     except socket.error as msg:
         print msg
         sys.exit(1)
-
-   # print s.recv(1024)
     return s
 def send(s):
     os.system("tar -jcf ../dpvs-ci.tar.bz2 ../dpvs")
+    os.system("ls -la")
     while 1:
         filepath = '../dpvs-ci.tar.bz2'
         if os.path.isfile(filepath):
@@ -47,7 +46,12 @@ def run_commond(s,input_command):
             break
         sys.stdout.write(buff)
         flag = buff
-    s.close()
+        if flag[-1] == '0':
+            break
+    try:
+        s.close()
+    except Exception, e:
+        traceback.print_exc()
     sys.exit(int(flag[-1]))
 
 
