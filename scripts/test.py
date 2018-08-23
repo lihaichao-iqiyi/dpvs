@@ -48,7 +48,9 @@ def run_commond(s,input_command):
         sys.stdout.write(buff)
     flag = s.recv(1024)
     s.close()
+    print '---------------------------'
     print("flag:%s"%flag)
+    type(flag)
     sys.exit(int(flag))
 
 
