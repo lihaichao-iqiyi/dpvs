@@ -7,21 +7,21 @@ apt addons: true
 cache components: true
 compiler: gcc
 before_install: true
-install: true 
-before_script: true 
+install: true
+before_script: true
 jobs:
   include:
   - stage: build
     script:
     - echo "Hello world!"
-    - python scripts/test.py send
-    - python scripts/test.py build
-    - python scripts/test.py deploy
-    - python scripts/test.py test
+    - python scripts/travis-ci.py send
+    - python scripts/travis-ci.py build
+    - python scripts/travis-ci.py deploy
+    - python scripts/travis-ci.py test
 before_cache: true
 after_success: true
 after_failure: true
 before_deploy: true
-deploy: 
+deploy:
 after_deploy: true
 after_script: true
