@@ -42,16 +42,14 @@ def run_commond(s,input_command):
     s.shutdown(1)
     print '收到内容：\n'
     while 1:
+        global flag
         buff = s.recv(4096)
         if not len(buff):
             break
         sys.stdout.write(buff)
-    flag = s.recv(1024)
+        flag = buff
     s.close()
-    print '---------------------------'
-    print("flag:%s"%flag)
-    type(flag)
-    sys.exit(int(flag))
+    sys.exit(int(flag[-1]))
 
 
 
@@ -68,8 +66,8 @@ def test(s):
     run_commond(s, input_command)
 
 if __name__=="__main__":
-    print 'start'
     s = socket_build()
+    build(s)
     if sys.argv[1] == "send":
         send(s)
     elif sys.argv[1] == "build":
